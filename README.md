@@ -1,3 +1,14 @@
+<h5>2013-09-16</h5>
+<ol>
+    <li>新增quickimage插件，此插件是对image的快捷操作，当点击图片的时候会显示出来</li>
+	<li>编辑器与jQuery解耦，不需要jQuery.js文件了</li>
+	<li>源代码里面删除了alimail的插件</li>
+	<li>quote插件可以公用，此插件会寻找定义的div，然后会把找到的这个div隐藏起来，用于邮件的引文隐藏</li>
+</ol>
+<h5>2013-09-14</h5>
+<ol>
+	<li>升级到官方版本4.0.6</li>
+</ol>
 <h5>2013-09-09</h5>
 <ol>
     <li>新增quote plugin for webmail，用来隐藏引用的文字，只适用于webmail</li>
