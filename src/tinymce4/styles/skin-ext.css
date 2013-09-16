@@ -71,6 +71,45 @@
     border: 1px solid #CDCDCD;
 }
 
+.mce-plugin-ico {
+    vertical-align: top;
+    width: 16px;
+    height: 16px;
+    background: url(../images/icons.png) no-repeat bottom right;
+}
+
+.mce-plugin-ico-cross {
+    background-position: -237px -67px;
+}
+
+.mce-plugin-ico-cross:hover {
+    background-position: -237px -87px;
+}
+
+.mce-quick-img-ico {
+    position: absolute;
+    top: 4px;
+    right: 3px;
+    cursor: pointer;
+}
+
+.mce-quick-img-wrap {
+    position: absolute;
+    background-color: #F4F4F4;
+    border: 1px solid #CCCCCC;
+    line-height: normal;
+    padding: 3px 22px 3px 3px;
+    z-index: 150;
+}
+
+.mce-quick-img-wrap A {
+    line-height: normal;
+    margin: 0 4px;
+    color: #003399;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .mce-floatpanel {
     background-color: #FFFFFF;
 }

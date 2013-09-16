@@ -390,6 +390,7 @@ div.mce-fullscreen {
 }
 
 .mce-window-head .mce-close {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
     position: absolute;
     right: 15px;
     top: 9px;

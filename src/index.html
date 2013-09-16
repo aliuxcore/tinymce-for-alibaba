@@ -6,7 +6,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>tinymce for alimail demo</title>
     <link rel="stylesheet" type="text/css" href="styles/layout.css"/>
-    <script type="text/javascript" src="jquery-1.7.2.js"></script>
     <script type="text/javascript" src="tinymce4/tinymce.js"></script>
     <style type="text/css">
         button {
@@ -23,6 +22,11 @@
     <ol>
         <li>
             使用此版本的用户,必须要在BODY里面加上如下HTML代码
+            <pre>
+                &lt;div id="tinymce_helper" style="display: none;"&gt;
+                    &lt;iframe src="javascript:document.open();document.close();"&gt;&lt;/iframe&gt;
+                &lt;/div&gt;
+            </pre>
         </li>
         <li>
             已经在代码上加了注释，请查看index.html源码
@@ -82,15 +86,12 @@
 //        render_empty_fun : aym.util.renderEmptyNodeWithDefaultFontStyle,//alimail 使用的 ，获取默认字体的div文本的function
         init_instance_callback : function () { //初始化成功后的回调，alimail这里做了比较多的事情，参考代码
             window.editor = this;
+            this.insertContent('<img src="https://mail.aliyun-inc.com/reference/images/emotions_v2/37.gif"/>');
         },
         menu_class : "aym_scroll mce-y-scroll", //下拉菜单的样式，alimail这边主要是设置滚动条的样式，比如字体下拉菜单
         iframe_class : "aym_editor_iframe aym_scroll aym_scroll_auto", //iframe的样式，alimail这边主要是设置滚动条的样式
         full_screen_compute_top_fun : function () {//全屏的时候，alimail这边页面最上面有广告的，所以全屏的时候不能挡住广告，所以搞个计算top的function
-            var top = "0px", oWrapNode = $(".aym_page_wrap");
-            if (oWrapNode.length > 0) {
-                top = oWrapNode.offset().top + "px";
-            }
-            return top;
+            return 0;
         },
         cssFiles : [
             "styles/skin.css",
