@@ -340,8 +340,18 @@ define("tinymce/pasteplugin/Clipboard", [
 			} else {
 //				editor.on('init', function() {
 //					editor.dom.bind(editor.getBody(), 'paste', function(e) {
+//						var doc = editor.getDoc();
+//
 //						e.preventDefault();
-//						alert('Please use Ctrl+V/Cmd+V keyboard shortcuts to paste contents.');
+//
+//						// Paste as plain text when not using the keyboard
+//						if (e.clipboardData || doc.dataTransfer) {
+//							processText((e.clipboardData || doc.dataTransfer).getData('Text'));
+//							return;
+//						}
+//
+//						e.preventDefault();
+//						editor.windowManager.alert('Please use Ctrl+V/Cmd+V keyboard shortcuts to paste contents.');
 //					});
 //				});
 
@@ -353,6 +363,11 @@ define("tinymce/pasteplugin/Clipboard", [
 
 						var pastebinElm = createPasteBin();
 						var lastRng = editor.selection.getRng();
+
+						// Hack for #6051
+						if (Env.webkit && editor.inline) {
+							pastebinElm.contentEditable = true;
+						}
 
 						editor.selection.select(pastebinElm, true);
 
@@ -431,11 +446,10 @@ define("tinymce/pasteplugin/WordFilter", [
 	"tinymce/html/DomParser",
 	"tinymce/html/Schema",
 	"tinymce/html/Serializer",
-	"tinymce/html/Node",
-    "tinymce/ui/DomUtils"
-], function(Tools, StringUtils, DomParser, Schema, Serializer, Node, DomUtils) {
+	"tinymce/html/Node"
+], function(Tools, StringUtils, DomParser, Schema, Serializer, Node) {
 	return function(editor) {
-        var each = Tools.each, STRING_EMPTY = "", contains = StringUtils.contains;
+        var dom = tinymce.DOM, contains = StringUtils.contains;
 
         function mergeStyle(styleNode, body, win) {
             var sheet = styleNode.sheet, computeNodes = {};
@@ -445,12 +459,12 @@ define("tinymce/pasteplugin/WordFilter", [
                     for (var j = 0, rLen = rules.length; j < rLen; j++) {
                         var rule = rules[j];
                         if (rule.type == 1 && rule.style.cssText) {
-                            var allowNodes = body.find(rule.selectorText);
+                            var allowNodes = dom.select(rule.selectorText, body);
                             for (var k = 0, aLen = allowNodes.length; k < aLen; k++) {
                                 var allowNode = allowNodes[k];
                                 var nodeId = allowNode.getAttribute("id");
                                 if (!nodeId) {
-                                    nodeId = DomUtils.id();
+                                    nodeId = dom.uniqueId();
                                     allowNode.setAttribute("id", nodeId);
                                 }
 
@@ -499,23 +513,21 @@ define("tinymce/pasteplugin/WordFilter", [
         }
 
         function cleanBody(body) {
-            var childNodes = body.get(0).childNodes, toRemoveNodes = [];
-            for (var j = 0, cLen = childNodes.length; j < cLen; j++) {
-                var childNode = childNodes[j], nodeName = childNode.nodeName.toLowerCase();
-                if (childNode.nodeType != 1 || nodeName == "meta" || nodeName == "link" || nodeName == "style") {
-                    toRemoveNodes.push(childNode);
+            var childNodes = body.childNodes, removeNodes = [];
+            for (var j = 0, len = childNodes.length; j < len; j++) {
+                var child = childNodes[j], nodeName = child.nodeName.toLowerCase();
+                if (child.nodeType != 1 || nodeName == "meta" || nodeName == "link" || nodeName == "style") {
+                    removeNodes.push(child);
                 }
             }
 
-            for (var k = 0, rLen = toRemoveNodes.length; k < rLen; k++) {
-                $(toRemoveNodes[k]).remove();
-            }
+            dom.remove(removeNodes);
         }
 
         function isWordOrExcel(body) {
-            var metas = body.children("meta");
-            for (var i = 0, mLen = metas.length; i < mLen; i++) {
-                var meta = metas[i], content = meta.getAttribute("content");
+            var nodes = dom.select(">meta", body);
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var meta = nodes[i], content = meta.getAttribute("content");
 
                 if (content) {
                     content = content.toLowerCase();
@@ -528,21 +540,21 @@ define("tinymce/pasteplugin/WordFilter", [
         }
 
         function setDefaultTableBorder(body) {
-            var tableNodes = body.children("table"), DOM = tinymce.DOM;
-            for (var j = 0, tLen = tableNodes.length; j < tLen; j++) {
-                var tableNode = tableNodes[j];
-                DOM.setTableBorder(tableNode, 1, 1);
-                DOM.setStyle(tableNode, "border-collapse", "collapse");
+            var nodes = dom.select(">table", body);
+            for (var j = 0, len = nodes.length; j < len; j++) {
+                var node = nodes[j];
+                dom.setTableBorder(node, 1, 1);
+                dom.setStyle(node, "border-collapse", "collapse");
             }
         }
 
         function fixMarginLeft(body) {
-            var nodes = body.children();
-            for (var i = 0, len = nodes.length; i < len; i++) {
-                var node = $(nodes[i]);
-                var ml = node.css("margin-left");
+            var children = body.children;
+            for (var i = 0, len = children.length; i < len; i++) {
+                var child = children[i];
+                var ml = dom.getStyle(child, "margin-left");
                 if (ml && StringUtils.startsWithIgnoreCase(ml, "-")) {
-                    node.css("margin-left", "0px");
+                    dom.setStyle(child, "margin-left", "0px");
                 }
             }
         }
@@ -551,21 +563,20 @@ define("tinymce/pasteplugin/WordFilter", [
             var content = e.content;
 
             //use iframe to parse , can read style in chrome , IE and FF not support
-            var iframe = DomUtils.getContentIframe(), win = iframe.get(0).contentWindow;
-            var body = iframe.contents().find("body"), bodyDom = body.get(0);
-            bodyDom.innerHTML = content;
+            var body = tinymce.getHelperIframeBody(), win = tinymce.getHelperIframeWin();
+            dom.setHTML(body, content);
 
-            var styleNodes = body.children("style");
-            for (var i = 0, sLen = styleNodes.length; i < sLen; i++) {
-                mergeStyle(styleNodes[i], body, win);
+            var nodes = dom.select(">style", body);
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                mergeStyle(nodes[i], body, win);
             }
 
             setDefaultTableBorder(body);
             isWordOrExcel(body) && cleanBody(body);
             fixMarginLeft(body);
 
-            e.content = body.html();
-            bodyDom.innerHTML = "";
+            e.content = body.innerHTML;
+            dom.setHTML(body, "");
         });
 	};
 });
@@ -713,13 +724,13 @@ define("tinymce/pasteplugin/Plugin", [
 ], function(PluginManager, Clipboard, WordFilter, Quirks) {
 	var userIsInformed;
 
-    var contentIframe = $("#tinymce_helper iframe");
-    if (contentIframe.length == 0) {
-        alert('paste plugin depand on hidden iframe, you must insert iframe node into the document,' +
-            ' like <div id="tinymce_helper" style="display: none;"><iframe src="javascript:document.open();document.close();"></iframe></div>');
-    }
-
 	PluginManager.add('paste', function(editor) {
+
+        if (!tinymce.getHelperIframeWin()) {
+            alert('paste plugin depand on hidden iframe, you must insert iframe node into the document,' +
+                ' like <div id="tinymce_helper" style="display: none;"><iframe src="javascript:document.open();document.close();"></iframe></div>');
+        }
+
 		var self = this, clipboard;
 
 		function togglePlainTextPaste() {
