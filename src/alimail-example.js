@@ -35,7 +35,7 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
         _buildPlugins : function () {
             var oPlugins = [
                 "advlist", "autolink", "formlink", "imageuploader", "lists", "hr", "togglemore",
-                "textcolor", "insertdatetime", "tablev2", "emotionsv2", "paste"
+                "textcolor", "insertdatetime", "tablev2", "emotionsv2", "paste", "quickimage"
             ];
 
             if ((!env.isIE6) && (!env.isIE7) && this.cfg("fullScreen")) {
@@ -80,6 +80,7 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
                 init_instance_callback : function () {
                     _self._afterEditorInitialized.call(_self, this);
                 },
+                quote_class : cnst.ALIYUN_PREVIOUS_QUOTE,
                 menu_class : "aym_scroll mce-y-scroll",
                 iframe_class : "aym_editor_iframe aym_scroll aym_scroll_auto",
                 full_screen_compute_top_fun : function () {
@@ -92,6 +93,8 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
                 i18n_messages : {
                     //tinymce.js
                     "default.font" : $M("editor.core.font.default"),
+                    "button.ok" : $M("common.ok"),
+                    "button.cancel" : $M("common.cancel"),
                     "button.bold" : $M("editor.button.title.bold"),
                     "button.italic" : $M("editor.button.title.italic"),
                     "button.underline" : $M("editor.button.title.underline"),
@@ -148,7 +151,18 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
 
                     //textcolor/plugin.js
                     "button.text.color" : $M("editor.button.title.text.color"),
-                    "button.background.color" : $M("editor.button.title.background.color")
+                    "button.background.color" : $M("editor.button.title.background.color"),
+
+                    //quote/plugin.js
+                    "image.quote.title" : $M("editor.plugin.quote.toggle.title"),
+
+                    //quickimage/plugin.js
+                    "quick.image.small" : $M("editor.plugin.quickimage.small"),
+                    "quick.image.middle" : $M("editor.plugin.quickimage.middle"),
+                    "quick.image.big" : $M("editor.plugin.quickimage.big"),
+                    "quick.image.original" : $M("editor.plugin.quickimage.original"),
+                    "quick.image.remove" : $M("editor.plugin.quickimage.remove"),
+                    "quick.image.close" : $M("editor.plugin.quickimage.close")
 
                     //tablev2 plugin is only for alimail and has too much text, so write i18n text in plugin js file
                 }
@@ -159,7 +173,7 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
             this.clearDirty();
 
             var oPromptNode = this.__oPromptNode = $('<div class="mce_prompt">' + $M("editor.core.prompt.loading") + '</div>');
-            oPromptNode.appendTo($(this.__oHtmlEditor.getContentAreaContainer()).css("position", "relative"));
+            oPromptNode.appendTo($(this.__oHtmlEditor.getContentAreaContainer()));
 
             this.__oHtmlEditor.on("ResizeEditor", $.proxy(function () {
                     this.fire(cnst.EVENT.CONTROLRESIZE);
@@ -396,4 +410,4 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
             this.__oHtmlEditor = this.__oPlainEditor = null;
         }
     };
-});
+})
