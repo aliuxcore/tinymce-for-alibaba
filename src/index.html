@@ -21,7 +21,7 @@
 <div style="font-weight: bold;padding: 10px 10px 0 10px;">
     <ol>
         <li>
-            使用此版本的用户,必须要在BODY里面加上如下HTML代码
+            使用此版本的用户,必须要在BODY里面加上如下HTML代码，此iframe是用来解析Excel的
             <pre>
                 &lt;div id="tinymce_helper" style="display: none;"&gt;
                     &lt;iframe src="javascript:document.open();document.close();"&gt;&lt;/iframe&gt;
@@ -50,7 +50,7 @@
 
     var plugins = [
         "advlist", "autolink", "lists", "hr", "togglemore",
-        "textcolor", "insertdatetime", "link", "table", "paste", "fullscreen", "quote", "quickimage"
+        "textcolor", "insertdatetime", "link", "table", "paste", "fullscreen", "quote", "quickimage", "quicklink", "loading"
     ];
 
     var toolbar_1 = [
@@ -60,7 +60,7 @@
     ];
     var toolbar_2 = [
         "alignleft aligncenter alignright alignjustify",
-        "bullist numlist outdent indent", "link unlink", "hr inserttime"
+        "bullist numlist outdent indent", "link hr inserttime"
     ];
 
     tinymce.init({
@@ -86,7 +86,9 @@
 //        render_empty_fun : aym.util.renderEmptyNodeWithDefaultFontStyle,//alimail 使用的 ，获取默认字体的div文本的function
         init_instance_callback : function () { //初始化成功后的回调，alimail这里做了比较多的事情，参考代码
             window.editor = this;
-            this.insertContent('<img src="https://mail.aliyun-inc.com/reference/images/emotions_v2/37.gif"/>');
+            this.showLoading(function () {
+                this.insertContent('<div style=\"font-size:24px;\"><br><a href="http://www.163.com?dsd=dsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdsdd"><span><font><strong>1111</strong></font></span></a><img src="https://mail.aliyun-inc.com/reference/images/emotions_v2/37.gif"/></div>');
+            }, this);
         },
         quote_class : "__aliyun_previous_quote",//quote插件寻找的自定义隐藏的div的class
         menu_class : "aym_scroll mce-y-scroll", //下拉菜单的样式，alimail这边主要是设置滚动条的样式，比如字体下拉菜单
@@ -158,7 +160,17 @@
             "quick.image.big" : "大",
             "quick.image.original" : "原始大小",
             "quick.image.remove" : "删除",
-            "quick.image.close" : "关闭"
+            "quick.image.close" : "关闭",
+
+            //loading/plugin.js
+            "loading.title" : "数据加载中...",
+
+            //quicklink/plugin.js
+            "quick.link.foward" : "转到",
+            "quick.link.edit" : "更改",
+            "quick.link.unlink" : "移除链接",
+            "quick.link.ok" : "确定",
+            "quick.link.close" : "关闭"
         }
     });
 </script>

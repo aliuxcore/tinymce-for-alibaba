@@ -5905,7 +5905,52 @@ define("tinymce/dom/DOMUtils", [
 				h: parseInt(h, 10) || elm.offsetHeight || elm.clientHeight
 			};
 		},
+        getWidth : function (elm) {
+            var self = this, w;
 
+            elm = self.get(elm);
+            w = self.getStyle(elm, 'width');
+
+            // Non pixel value, then force offset/clientWidth
+            if (w.indexOf('px') === -1) {
+                w = 0;
+            }
+
+            return parseInt(w, 10) || elm.offsetWidth || elm.clientWidth;
+        },
+        getHeight : function (elm) {
+            var self = this, h;
+
+            elm = self.get(elm);
+            h = self.getStyle(elm, 'height');
+
+            // Non pixel value, then force offset/clientWidth
+            if (h.indexOf('px') === -1) {
+                h = 0;
+            }
+
+            return parseInt(h, 10) || elm.offsetHeight || elm.clientHeight;
+        },
+        setText : function (elm, text) {
+            if (elm && text && elm.nodeType === 1) {
+                this.setHTML(elm, "");
+                elm.appendChild((elm.ownerDocument || document).createTextNode(text));
+            }
+        },
+        getText : function (elm) {
+            if (elm) {
+                var nodeType = elm.nodeType;
+                if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
+                    if (typeof elm.textContent === 'string') {
+                        return elm.textContent;
+                    } else if (typeof elm.innerText === 'string') {
+                        return elm.innerText.replace(/\r\n/g, '');
+                    }
+                } else if (nodeType === 3 || nodeType === 4) {
+                    return elm.nodeValue;
+                }
+            }
+        },
 		/**
 		 * Returns a node by the specified selector function. This function will
 		 * loop through all parent nodes and call the specified function for each node.
@@ -6507,13 +6552,13 @@ define("tinymce/dom/DOMUtils", [
 			}
 
 			// Try the mce variant for these
-			if (/^(src|href|style|coords|shape)$/.test(name)) {
-				value = elm.getAttribute("data-mce-" + name);
-
-				if (value) {
-					return value;
-				}
-			}
+//			if (/^(src|href|style|coords|shape)$/.test(name)) {
+//				value = elm.getAttribute("data-mce-" + name);
+//
+//				if (value) {
+//					return value;
+//				}
+//			}
 
 			if (isIE && self.props[name]) {
 				value = elm[self.props[name]];
@@ -6545,7 +6590,7 @@ define("tinymce/dom/DOMUtils", [
 					value = self.serializeStyle(self.parseStyle(value), elm.nodeName);
 
 					if (self.settings.keep_values) {
-						elm.setAttribute('data-mce-style', value);
+//						elm.setAttribute('data-mce-style', value);
 					}
 				}
 			}
@@ -31763,7 +31808,7 @@ define("tinymce/ui/FormatControls", [
 
                 if (index > 0) {
                     var element = e.element;
-                    var text = element.textContent || element.innerText, firstFontFamily = getFirstFontFamily(value);
+                    var text = DOM.getText(element), firstFontFamily = getFirstFontFamily(value);
 
                     if (text && StringUtils.hasChinese(text)) {
                         value = firstFontFamily.zhCN;

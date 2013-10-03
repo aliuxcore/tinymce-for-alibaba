@@ -20,7 +20,7 @@ tinymce.PluginManager.add('togglemore', function (editor) {
             bottomToolbar = rootPanelItems[0].items()[1].getEl();
         }
 
-        var containerHeight = dom.getSize(container).h;
+        var containerHeight = dom.getHeight(container);
 
         if (dom.isHidden(bottomToolbar)) {
             this.addClass(activeCls);
@@ -30,7 +30,7 @@ tinymce.PluginManager.add('togglemore', function (editor) {
             dom.hide(bottomToolbar);
         }
 
-        dom.setStyle(iframe, "height", containerHeight - dom.getSize(toolbar).h);
+        dom.setStyle(iframe, "height", containerHeight - dom.getHeight(toolbar));
 
         editor.fire("ResizeEditor");
     }

@@ -18,14 +18,15 @@ tinymce.PluginManager.add('quickimage', function (editor) {
 
         QuickImage.prototype = {
             _render : function (parentNode) {
-                var html = ['<a _v="' + Constants.SMALL + '">' + editor.getSettingsMessage("quick.image.small") + '</a>-'];
-                html.push('<a _v="' + Constants.MIDDLE + '">' + editor.getSettingsMessage("quick.image.middle") + '</a>-');
-                html.push('<a _v="' + Constants.BIG + '">' + editor.getSettingsMessage("quick.image.big") + '</a>-');
-                html.push('<a _v="' + Constants.ORIGINAL + '">' + editor.getSettingsMessage("quick.image.original") + '</a>-');
-                html.push('<a _v="' + Constants.REMOVE + '">' + editor.getSettingsMessage("quick.image.remove") + '</a>');
-                html.push('<div class="mce-quick-img-ico mce-plugin-ico mce-plugin-ico-cross" _v="' + Constants.CLOSE + '" title="' + editor.getSettingsMessage("quick.image.close") + '"></div>');
+                var html = ['<div class="mce-qimage-link-wrap">'];
+                html.push('<a href="javascript:void(0);" _v="' + Constants.SMALL + '">' + editor.getSettingsMessage("quick.image.small") + '</a>-');
+                html.push('<a href="javascript:void(0);" _v="' + Constants.MIDDLE + '">' + editor.getSettingsMessage("quick.image.middle") + '</a>-');
+                html.push('<a href="javascript:void(0);" _v="' + Constants.BIG + '">' + editor.getSettingsMessage("quick.image.big") + '</a>-');
+                html.push('<a href="javascript:void(0);" _v="' + Constants.ORIGINAL + '">' + editor.getSettingsMessage("quick.image.original") + '</a>');
+                html.push('<div class="mce-qimage-ico-remove mce-plugin-ico mce-plugin-ico-remove" _v="' + Constants.REMOVE + '" title="' + editor.getSettingsMessage("quick.image.remove") + '"></div></div>');
+                html.push('<div class="mce-qimage-ico-close mce-plugin-ico mce-plugin-ico-close" _v="' + Constants.CLOSE + '" title="' + editor.getSettingsMessage("quick.image.close") + '"></div>');
 
-                this.el = dom.add(parentNode, "div", {"class" : "mce-quick-img-wrap", "style" : "display: none;"}, html.join(""));
+                this.el = dom.add(parentNode, "div", {"class" : "mce-qimage-wrap", "style" : "display: none;"}, html.join(""));
             },
             _bindEvent : function () {
                 dom.bind(this.el, "click", function (e) {
@@ -87,7 +88,7 @@ tinymce.PluginManager.add('quickimage', function (editor) {
                     this.target = targetNode;
 
                     var doc = editorDom.doc, el = this.el;
-                    var position = editorDom.getPos(targetNode), targetHeight = editorDom.getSize(targetNode).h;
+                    var position = editorDom.getPos(targetNode), targetHeight = editorDom.getHeight(targetNode);
                     var top = position.y - (doc.documentElement.scrollTop || doc.body.scrollTop) + targetHeight;
                     var left = position.x - (doc.documentElement.scrollLeft || doc.body.scrollLeft);
 
@@ -130,16 +131,21 @@ tinymce.PluginManager.add('quickimage', function (editor) {
             }
         });
 
+        var lastTime, lastNode;
         editor.on("nodeChange", function (e) {
-            var node = e.element, doHide = true;
+            lastNode = e.element;
+            var now = lastTime = tinymce.getTimestamp();
 
-            if (node && node.nodeName.toLocaleLowerCase() == "img") {
-                quickImage = quickImage || new QuickImage(editor.getContentAreaContainer());
-                quickImage.showAt(node);
-                doHide = false;
-            }
+            setTimeout(function () {
+                if (now == lastTime) {
+                    if (lastNode && lastNode.nodeName.toLocaleLowerCase() == "img" && (lastNode.parentNode || lastNode.parentElement)) {
+                        quickImage = quickImage || new QuickImage(editor.getContentAreaContainer());
+                        quickImage.showAt(lastNode);
+                    }
+                }
+            }, 500);
 
-            doHide && quickImage && quickImage.hide();
+            quickImage && quickImage.hide();
         });
     });
 });

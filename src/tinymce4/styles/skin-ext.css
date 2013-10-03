@@ -39,13 +39,11 @@
     padding: 0;
 }
 
-.mce_prompt {
+.mce_loading {
     padding: 3px 5px;
     position: absolute;
     left: 0;
     top: 0;
-    right: 0;
-    bottom: 0;
     overflow: hidden;
     z-index: 99;
     display: none;
@@ -78,36 +76,137 @@
     background: url(../images/icons.png) no-repeat bottom right;
 }
 
-.mce-plugin-ico-cross {
-    background-position: -237px -67px;
+.mce-plugin-ico-close {
+    width: 10px;
+    height: 10px;
+    background-position: -422px -69px;
 }
 
-.mce-plugin-ico-cross:hover {
-    background-position: -237px -87px;
+.mce-plugin-ico-close:hover {
+    background-position: -422px -89px;
 }
 
-.mce-quick-img-ico {
+.mce-plugin-ico-remove {
+    background-position: -402px -66px;
+}
+
+.mce-plugin-ico-remove:hover {
+    background-position: -402px -86px;
+}
+
+.mce-plugin-ico-tick {
+    background-position: -217px -66px;
+}
+
+.mce-plugin-ico-tick:hover {
+    background-position: -217px -86px;
+}
+
+.mce-plugin-ico-edit {
+    background-position: -274px -66px;
+}
+
+.mce-plugin-ico-edit:hover {
+    background-position: -274px -86px;
+}
+
+.mce-plugin-ico-unlink {
+    background-position: -384px -66px;
+}
+
+.mce-plugin-ico-unlink:hover {
+    background-position: -384px -86px;
+}
+
+.mce-qimage-ico-remove, .mce-qimage-ico-close, .mce-qlink-ico-close, .mce-qlink-ico-tick, .mce-qlink-ico-edit, .mce-qlink-ico-unlink {
     position: absolute;
-    top: 4px;
-    right: 3px;
     cursor: pointer;
 }
 
-.mce-quick-img-wrap {
-    position: absolute;
-    background-color: #F4F4F4;
-    border: 1px solid #CCCCCC;
-    line-height: normal;
-    padding: 3px 22px 3px 3px;
-    z-index: 150;
+.mce-qlink-ico-close, .mce-qimage-ico-close {
+    top: 4px;
+    right: 3px;
 }
 
-.mce-quick-img-wrap A {
-    line-height: normal;
+.mce-qimage-ico-remove {
+    top: 1px;
+    right: 0;
+}
+
+.mce-qlink-ico-tick {
+    top: 1px;
+    right: 0;
+}
+
+.mce-qlink-ico-edit {
+    top: 1px;
+    right: 17px;
+}
+
+.mce-qlink-ico-unlink {
+    top: 1px;
+    right: 0;
+}
+
+.mce-qimage-wrap, .mce-qlink-wrap {
+    position: absolute;
+    background-color: #F4F4F4;
+    padding: 3px 16px 3px 3px;
+    z-index: 150;
+    font-size: 13px;
+}
+
+.mce-qimage-wrap A, .mce-qlink-wrap A {
     margin: 0 4px;
     color: #003399;
     text-decoration: none;
     cursor: pointer;
+    vertical-align: text-bottom;
+}
+
+.mce-qlink-link-wrap, .mce-qimage-link-wrap {
+    line-height: 18px;
+    height: 18px;
+    overflow: hidden;
+}
+
+.mce-qimage-link-wrap {
+    padding-right: 16px;
+    position: relative;
+}
+
+.mce-qlink-link-wrap {
+    padding-left: 3px;
+}
+
+.mce-qlink-span {
+    vertical-align: text-bottom;
+}
+
+.mce-qlink-edit, .mce-qlink-foward {
+    position: relative;
+    overflow: hidden;
+    display: none;
+}
+
+.mce-qlink-edit {
+    padding-right: 22px;
+}
+
+.mce-qlink-foward {
+    padding-right: 33px;
+}
+
+.mce-qlink-input {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    vertical-align: top;
+    background-color: #FFFFFF;
+    height: 18px;
+    line-height: 18px;
+    cursor: text;
+    width: 250px;
 }
 
 .mce-floatpanel {

@@ -35,7 +35,7 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
         _buildPlugins : function () {
             var oPlugins = [
                 "advlist", "autolink", "formlink", "imageuploader", "lists", "hr", "togglemore",
-                "textcolor", "insertdatetime", "tablev2", "emotionsv2", "paste", "quickimage"
+                "textcolor", "insertdatetime", "tablev2", "emotionsv2", "paste", "quickimage", "quicklink", "loading"
             ];
 
             if ((!env.isIE6) && (!env.isIE7) && this.cfg("fullScreen")) {
@@ -54,7 +54,7 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
             ];
             var toolbar_2 = [
                 "alignleft aligncenter alignright alignjustify",
-                "bullist numlist outdent indent", "link unlink", "hr inserttime"
+                "bullist numlist outdent indent", "link hr inserttime"
             ];
 
             tinymce.init({
@@ -162,9 +162,17 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
                     "quick.image.big" : $M("editor.plugin.quickimage.big"),
                     "quick.image.original" : $M("editor.plugin.quickimage.original"),
                     "quick.image.remove" : $M("editor.plugin.quickimage.remove"),
-                    "quick.image.close" : $M("editor.plugin.quickimage.close")
+                    "quick.image.close" : $M("editor.plugin.quickimage.close"),
 
-                    //tablev2 plugin is only for alimail and has too much text, so write i18n text in plugin js file
+                    //loading/plugin.js
+                    "loading.title" : $M("editor.core.prompt.loading"),
+
+                    //quicklink/plugin.js
+                    "quick.link.foward" : $M("editor.plugin.quicklink.forward"),
+                    "quick.link.edit" : $M("editor.plugin.quicklink.edit"),
+                    "quick.link.unlink" : $M("editor.plugin.quicklink.unlink"),
+                    "quick.link.ok" : $M("editor.plugin.quicklink.ok"),
+                    "quick.link.close" : $M("editor.plugin.quicklink.close")
                 }
             });
         },
@@ -172,17 +180,11 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
             this.__oHtmlEditor = oHtmlEditor;
             this.clearDirty();
 
-            var oPromptNode = this.__oPromptNode = $('<div class="mce_prompt">' + $M("editor.core.prompt.loading") + '</div>');
-            oPromptNode.appendTo($(this.__oHtmlEditor.getContentAreaContainer()));
-
             this.__oHtmlEditor.on("ResizeEditor", $.proxy(function () {
                     this.fire(cnst.EVENT.CONTROLRESIZE);
 
                 }, this)).on("click", $.proxy(function () {
                     this.el.click();
-
-                }, this)).on("SetContent", $.proxy(function () {
-                    this.__oPromptNode && this.__oPromptNode.hide();
 
                 }, this));
 
@@ -357,15 +359,19 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
             var oHtmlEditor = this.__oHtmlEditor;
             return oHtmlEditor ? $(oHtmlEditor.getBody()) : null;
         },
+        showLoading : function (fnCb, context) {
+            var editor = this.__oHtmlEditor;
+            if (editor && editor.showLoading) {
+                editor.showLoading(fnCb, context);
+            } else {
+                fnCb && fnCb.call(context || this);
+            }
+        },
         _setHtmlContent : function (c) {
             var editor = this.__oHtmlEditor;
             if (editor) {
-                c && this.__oPromptNode && this.__oPromptNode.show();
-
-                util.delay(100, $.proxy(function () {
-                    editor.setContent(c || "");
-                    this.clearUndo();
-                }, this));
+                editor.setContent(c || "");
+                this.clearUndo();
             }
         },
         clearUndo : function () {
@@ -410,4 +416,4 @@ aym.createClass("aym.control.ui.HtmlEditor", "aym.control.SharedUIControl", func
             this.__oHtmlEditor = this.__oPlainEditor = null;
         }
     };
-})
+});
